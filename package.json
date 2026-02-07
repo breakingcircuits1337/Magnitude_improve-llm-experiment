@@ -1,0 +1,18 @@
+{
+  "name": "magnitude-self-improvement",
+  "version": "1.0.0",
+  "description": "Magnitude project for web-based self-improvement tasks",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "magnitude-core": "file:../../../Desktop/PROJECTS/magnitude-main/packages/magnitude-core",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
