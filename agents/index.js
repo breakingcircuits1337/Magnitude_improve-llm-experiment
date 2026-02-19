@@ -1,6 +1,7 @@
 // Multi-Agent Architecture for Magnitude
 import MemorySystem from './memory.js';
 import DebateAgent from './debate.js';
+import ResearchAgent from './research.js';
 
 class ResearchAgent {
     constructor(memory) {

@@ -32,7 +32,10 @@ class MagnitudeSelfImprover {
         });
         
         // Initialize agents
-        this.researchAgent = new ResearchAgent(this.memory);
+        this.researchAgent = new ResearchAgent(this.memory, {
+            headless: this.headless,
+            apiKey: options.anthropicApiKey || process.env.ANTHROPIC_API_KEY
+        });
         this.verificationAgent = new VerificationAgent(this.memory);
         this.synthesisAgent = new SynthesisAgent(this.memory);
         this.taskGenerator = new TaskGenerator(this.memory);
@@ -81,6 +84,9 @@ class MagnitudeSelfImprover {
             console.log(`   Knowledge gaps identified: ${stats.knowledgeGaps.length}`);
         }
         console.log("");
+        
+        // Initialize browser for web learning
+        await this.researchAgent.initializeBrowser();
         
         // Initialize browser if available
         try {
