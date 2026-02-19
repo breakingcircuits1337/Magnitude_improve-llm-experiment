@@ -1,5 +1,5 @@
-// Magnitude Self-Improvement Agent - Improved Version
-// Multi-Agent Architecture with Memory System
+// Magnitude Self-Improvement Agent - v2.2
+// Multi-Agent Architecture with Memory System and Self-Modification
 
 import { BrowserAgent } from 'magnitude-core';
 import { 
@@ -9,21 +9,31 @@ import {
     TaskGenerator,
     MemorySystem 
 } from './agents/index.js';
+import SelfModificationSystem from './lib/self-modify.js';
+import ReflectionAgent from './agents/reflection.js';
 
 class MagnitudeSelfImprover {
     constructor(options = {}) {
         this.headless = options.headless ?? false;
         this.sessionName = options.sessionName || `session_${Date.now()}`;
         this.tasksPerSession = options.tasksPerSession || 5;
+        this.enableSelfModification = options.enableSelfModification ?? true;
         
         // Initialize systems
         this.memory = new MemorySystem(options.memoryPath || './memory');
+        
+        // Initialize self-modification
+        this.selfMod = new SelfModificationSystem({
+            projectPath: options.projectPath || './',
+            llm: options.llm || null
+        });
         
         // Initialize agents
         this.researchAgent = new ResearchAgent(this.memory);
         this.verificationAgent = new VerificationAgent(this.memory);
         this.synthesisAgent = new SynthesisAgent(this.memory);
         this.taskGenerator = new TaskGenerator(this.memory);
+        this.reflectionAgent = new ReflectionAgent(this.memory, { llm: options.llm });
         
         // Session metrics
         this.sessionMetrics = {
@@ -88,6 +98,9 @@ class MagnitudeSelfImprover {
         // Run synthesis
         await this.runSynthesis();
         
+        // Run reflection and self-modification
+        await this.runReflection();
+        
         // Record session
         const sessionTime = (Date.now() - startTime) / 1000;
         this.sessionMetrics.researchTime = sessionTime;
@@ -150,6 +163,38 @@ class MagnitudeSelfImprover {
         console.log("✅ Synthesis complete");
     }
 
+    async runReflection() {
+        if (!this.enableSelfModification) return;
+        
+        console.log(`\n${"─".repeat(50)}`);
+        console.log("🔄 Running reflection and self-modification...");
+        
+        try {
+            const reflection = await this.reflectionAgent.reflect(this.sessionMetrics);
+            
+            if (reflection.codeImprovements?.length > 0) {
+                console.log('\n📝 Code improvements suggested:');
+                reflection.codeImprovements.forEach(imp => {
+                    console.log(`   - [${imp.priority}] ${imp.description}`);
+                });
+            }
+            
+            if (this.sessionMetrics.tasksFailed > 0 && this.selfMod) {
+                console.log('\n🔧 Attempting self-modification...');
+                const failure = {
+                    task: 'session_tasks',
+                    error: `${this.sessionMetrics.tasksFailed} tasks failed`,
+                    sessionMetrics: this.sessionMetrics
+                };
+                
+                await this.selfMod.improve(failure);
+            }
+            
+        } catch (error) {
+            console.log(`⚠️  Reflection error: ${error.message}`);
+        }
+    }
+
     printSessionSummary() {
         const stats = this.memory.getStats();
         
@@ -193,6 +238,36 @@ class MagnitudeSelfImprover {
                 
             case 'export':
                 console.log(JSON.stringify(this.memory.exportKnowledge(), null, 2));
+                break;
+                
+            case 'improve':
+                if (!this.selfMod) {
+                    console.log('Self-modification not enabled');
+                    break;
+                }
+                const failure = {
+                    task: args.slice(1).join(' ') || 'manual',
+                    error: 'Simulated failure for improvement',
+                };
+                await this.selfMod.improve(failure);
+                break;
+                
+            case 'history':
+                if (!this.selfMod) break;
+                console.log('Modification history:');
+                this.selfMod.getHistory().forEach(h => {
+                    console.log(`  - ${h.timestamp}: ${h.change || h.file}`);
+                });
+                break;
+                
+            case 'revert':
+                if (!this.selfMod) break;
+                const backup = args[1];
+                if (backup) {
+                    this.selfMod.revertToBackup(backup);
+                } else {
+                    console.log('Usage: magnitude improve --revert <backup-name>');
+                }
                 break;
                 
             default:
