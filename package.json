@@ -1,6 +1,6 @@
 {
   "name": "magnitude-self-improvement",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Magnitude: LLM Self-Improvement Framework with Multi-Agent Architecture, Debate System, and Azure LLM Integration",
   "main": "index.js",
   "type": "module",
@@ -33,6 +33,7 @@
   "license": "MIT",
   "dependencies": {
     "@magnitudedev/browser-agent": "^0.3.1",
+    "chroma-js": "^2.4.2",
     "zod": "^3.22.0"
   },
   "devDependencies": {
