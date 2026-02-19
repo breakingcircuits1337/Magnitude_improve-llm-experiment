@@ -1,6 +1,6 @@
 {
   "name": "magnitude-self-improvement",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Magnitude: LLM Self-Improvement Framework with Multi-Agent Architecture and Persistent Memory",
   "main": "index.js",
   "type": "module",
@@ -10,7 +10,8 @@
     "stats": "node index.js --stats",
     "gaps": "node index.js --gaps",
     "export": "node index.js --export",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "browser": "node examples/browser-research.js"
   },
   "keywords": [
     "llm",
@@ -19,12 +20,13 @@
     "agent",
     "autonomous",
     "research",
-    "magnitude"
+    "magnitude",
+    "browser-use"
   ],
   "author": "BreakingCircuits",
   "license": "MIT",
   "dependencies": {
-    "magnitude-core": "file:../../../Desktop/PROJECTS/magnitude-main/packages/magnitude-core",
+    "@magnitudedev/browser-agent": "^0.3.1",
     "zod": "^3.22.0"
   },
   "devDependencies": {
