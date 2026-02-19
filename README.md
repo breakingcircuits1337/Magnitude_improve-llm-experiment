@@ -1,22 +1,165 @@
-Magnitude: LLM Self-Improvement Experiment
-From Directive to Framework: Autonomous Skill Acquisition
+# Magnitude: LLM Self-Improvement Framework
 
-    "Do whatever you need to use the browser."
+<p align="center">
+  <img src="https://img.shields.io/badge/Version-2.0.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
+  <img src="https://img.shields.io/badge/Type-Multi--Agent-orange" alt="Type">
+</p>
 
-TL;DR: Magnitude is an experimental framework born from a simple goal: turning open-source LLM architectures into autonomous agents capable of self-directed learning. 
-By granting the agent unrestricted browser access for skill acquisition, we mapped the transition from basic prompting to a structured framework for knowledge expansion.
-📄 The White Paper
+## From Directive to Framework: Autonomous Skill Acquisition
 
-This repository contains the full research and results of the initial "Clawdbot" phase. Read the White Paper Here (or link to the specific file).
-🚀 Key Features
+> *"Do whatever you need to use the browser."*
 
-    Autonomous Learning Loop: Logic for agents to identify knowledge gaps and use web resources to bridge them.
+**Magnitude** is an experimental framework for turning open-source LLM architectures into autonomous agents capable of self-directed learning through persistent memory and multi-agent collaboration.
 
-    Open-Code Integration: Built to demonstrate the power of agentic workflows on open-source foundations.
+## What's New in v2.0
 
-    Experimental Results: Documentation of the first 72 hours of autonomous browser interaction and framework formation.
+- **🧠 Persistent Memory System** - Knowledge persists between sessions
+- **👥 Multi-Agent Architecture** - Research, Verification, and Synthesis agents
+- **📊 Evaluation Metrics** - Track improvement over time
+- **🎯 Dynamic Task Generation** - Identifies and fills knowledge gaps
+- **🔄 Knowledge Synthesis** - Combines findings into insights
 
-🤝 Call for Collaboration
+## Architecture
 
-This is a "proof of possibility." I am releasing this to inspire researchers and developers to expand on this architecture. If you specialize in multi-agent systems or 
-autonomous reasoning, I invite you to review the results and fork the repo to push these boundaries further.
+```
+┌─────────────────────────────────────────────────────────┐
+│                   Magnitude Framework                     │
+├─────────────────────────────────────────────────────────┤
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│  │   Research   │  │  Verification│  │  Synthesis   │  │
+│  │    Agent     │─▶│    Agent     │─▶│    Agent     │  │
+│  └──────────────┘  └──────────────┘  └──────────────┘  │
+│         │                                   │           │
+│         └───────────┬───────────────────────┘           │
+│                     ▼                                     │
+│            ┌────────────────┐                            │
+│            │  Memory System │                            │
+│            │  (Persistent)   │                            │
+│            └────────────────┘                            │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Run a self-improvement session
+npm start
+
+# Run in headless mode
+npm start -- --headless
+
+# Custom session options
+npm start -- --tasks=10 --name=my_session
+```
+
+## CLI Commands
+
+```bash
+# View current stats
+npm run stats
+
+# See knowledge gaps
+npm run gaps
+
+# Export all knowledge
+npm run export
+```
+
+## Memory System
+
+The framework maintains persistent memory across sessions:
+
+```javascript
+import { MemorySystem } from './lib/memory.js';
+
+const memory = new MemorySystem('./memory');
+
+// Add knowledge
+memory.addKnowledge({
+    topic: "AI Safety",
+    content: "...",
+    tags: ["ai", "safety"]
+});
+
+// Search knowledge
+const results = memory.searchKnowledge("AI safety");
+
+// Identify gaps
+const gaps = memory.identifyGaps();
+
+// Get statistics
+const stats = memory.getStats();
+```
+
+## Multi-Agent System
+
+### Research Agent
+Autonomously researches topics using browser automation.
+
+### Verification Agent
+Evaluates quality, accuracy, and relevance of findings.
+
+### Synthesis Agent
+Combines related knowledge into insights.
+
+## Configuration
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `headless` | false | Run browser in headless mode |
+| `tasksPerSession` | 5 | Number of tasks per session |
+| `memoryPath` | ./memory | Path to memory storage |
+
+## Files
+
+```
+Magnitude/
+├── index.js           # Main entry point
+├── package.json       # Dependencies
+├── .gitignore         # Git ignore rules
+├── README.md          # This file
+├── lib/
+│   └── memory.js      # Memory system
+├── agents/
+│   └── index.js       # Multi-agent system
+└── memory/            # Persistent storage (created at runtime)
+    ├── knowledge.json
+    ├── metrics.json
+    └── evaluation.json
+```
+
+## Evaluation
+
+Track improvement with built-in metrics:
+
+- **Quality Score**: 0-1 rating of task completion
+- **Verification Rate**: % of research passing verification
+- **Knowledge Growth**: Entries added per session
+- **Gap Closure**: Progress on identified knowledge gaps
+
+## Research Notes
+
+This project documents the evolution from:
+1. **Clawdbot Phase** (v1): Basic browser automation
+2. **Framework Phase** (v2): Multi-agent with memory
+
+## Contributing
+
+This is a "proof of possibility." To expand:
+
+1. Fork the repository
+2. Implement new agent types
+3. Add evaluation metrics
+4. Share results
+
+## License
+
+MIT
+
+---
+
+*Built with 🔬 by BreakingCircuits*
