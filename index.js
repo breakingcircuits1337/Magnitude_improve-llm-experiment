@@ -1,5 +1,5 @@
-// Magnitude Self-Improvement Agent - v2.2
-// Multi-Agent Architecture with Memory System and Self-Modification
+// Magnitude Self-Improvement Agent - v2.4
+// Multi-Agent Architecture with Memory System, Self-Modification, Debate, and Human Feedback
 
 import { BrowserAgent } from 'magnitude-core';
 import { 
@@ -12,6 +12,7 @@ import {
 } from './agents/index.js';
 import SelfModificationSystem from './lib/self-modify.js';
 import ReflectionAgent from './agents/reflection.js';
+import HumanFeedbackLoop from './lib/human-feedback.js';
 
 class MagnitudeSelfImprover {
     constructor(options = {}) {
@@ -38,6 +39,11 @@ class MagnitudeSelfImprover {
         this.debateAgent = new DebateAgent({
             mistralPath: options.mistralPath || '/home/sarah/opencode-bc/models/mistral.py',
             kimiPath: options.kimiPath || '/home/sarah/opencode-bc/models/kimi.py'
+        });
+        
+        // Initialize human feedback loop
+        this.feedbackLoop = new HumanFeedbackLoop({
+            feedbackPath: options.feedbackPath || './feedback'
         });
         
         // Session metrics
@@ -146,6 +152,19 @@ class MagnitudeSelfImprover {
             task.task,
             researchResult.result
         );
+        
+        // Auto-queue low confidence items for human review
+        if (qualityScore < 0.7) {
+            console.log(`   ⚠️  Low confidence - queued for human review`);
+            this.feedbackLoop.queueForReview({
+                type: 'research',
+                content: researchResult.result.content,
+                source: 'auto',
+                confidence: qualityScore,
+                task: task.task,
+                verificationResult: verification
+            });
+        }
         
         console.log(`   ⏱️  Time: ${((Date.now() - taskStart) / 1000).toFixed(1)}s`);
         console.log(`   ✓ Quality score: ${qualityScore.toFixed(2)}`);
@@ -286,6 +305,49 @@ class MagnitudeSelfImprover {
                 } else {
                     console.log('Usage: magnitude improve --revert <backup-name>');
                 }
+                break;
+                
+            case 'feedback':
+            case 'review':
+                const fbCmd = args[1];
+                switch (fbCmd) {
+                    case 'pending':
+                        console.log('📝 Pending Reviews:');
+                        this.feedbackLoop.getPending().forEach(p => {
+                            console.log(`  [${p.id.slice(0,8)}] ${p.type}: ${p.content?.slice(0,50)}...`);
+                        });
+                        break;
+                    case 'approve':
+                        await this.feedbackLoop.approve(args[2], args.slice(3).join(' '));
+                        break;
+                    case 'reject':
+                        await this.feedbackLoop.reject(args[2], args.slice(3).join(' '));
+                        break;
+                    case 'queue':
+                        this.feedbackLoop.queueForReview({
+                            type: args[2] || 'general',
+                            content: args.slice(3).join(' ')
+                        });
+                        break;
+                    case 'report':
+                        console.log(JSON.stringify(this.feedbackLoop.generateReport(), null, 2));
+                        break;
+                    default:
+                        console.log('Usage: feedback <pending|approve|reject|queue|report>');
+                        console.log('  feedback pending          - List pending items');
+                        console.log('  feedback approve <id>    - Approve item');
+                        console.log('  feedback reject <id>     - Reject item');
+                        console.log('  feedback queue <type> <content> - Queue new item');
+                        console.log('  feedback report          - Generate report');
+                }
+                break;
+                
+            case 'learn':
+                console.log('📚 Learning from feedback...');
+                const { insights } = this.feedbackLoop.learnFromApproved();
+                console.log(`   Approved: ${insights.approvedCount}`);
+                console.log(`   Approval rate: ${(insights.approvalRate * 100).toFixed(1)}%`);
+                console.log(`   Avg rating: ${insights.avgRating?.toFixed(2)}`);
                 break;
                 
             default:

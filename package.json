@@ -1,6 +1,6 @@
 {
   "name": "magnitude-self-improvement",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Magnitude: LLM Self-Improvement Framework with Multi-Agent Architecture, Debate System, and Azure LLM Integration",
   "main": "index.js",
   "type": "module",
