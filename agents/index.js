@@ -1,5 +1,6 @@
 // Multi-Agent Architecture for Magnitude
 import MemorySystem from './memory.js';
+import DebateAgent from './debate.js';
 
 class ResearchAgent {
     constructor(memory) {
@@ -196,4 +197,4 @@ class TaskGenerator {
     }
 }
 
-export { ResearchAgent, VerificationAgent, SynthesisAgent, TaskGenerator, MemorySystem };
+export { ResearchAgent, VerificationAgent, SynthesisAgent, TaskGenerator, MemorySystem, DebateAgent };

@@ -1,7 +1,7 @@
 # Magnitude: LLM Self-Improvement Framework
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-2.2.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Version-2.3.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
   <img src="https://img.shields.io/badge/Type-Multi--Agent-orange" alt="Type">
 </p>
@@ -11,6 +11,12 @@
 > *"Do whatever you need to use the browser."*
 
 **Magnitude** is an experimental framework for turning open-source LLM architectures into autonomous agents capable of self-directed learning through persistent memory and multi-agent collaboration.
+
+## What's New in v2.3
+
+- **⚖️ Multi-Agent Debate** - Mistral 3 Large vs Kimi K2 Thinking debate system
+- **☁️ Azure Integration** - Uses your Azure-hosted LLMs for debate
+- **🔄 Nuanced Synthesis** - Kimi synthesizes balanced conclusions
 
 ## What's New in v2.2
 

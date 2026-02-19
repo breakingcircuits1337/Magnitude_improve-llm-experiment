@@ -7,7 +7,8 @@ import {
     VerificationAgent, 
     SynthesisAgent, 
     TaskGenerator,
-    MemorySystem 
+    MemorySystem,
+    DebateAgent
 } from './agents/index.js';
 import SelfModificationSystem from './lib/self-modify.js';
 import ReflectionAgent from './agents/reflection.js';
@@ -34,6 +35,10 @@ class MagnitudeSelfImprover {
         this.synthesisAgent = new SynthesisAgent(this.memory);
         this.taskGenerator = new TaskGenerator(this.memory);
         this.reflectionAgent = new ReflectionAgent(this.memory, { llm: options.llm });
+        this.debateAgent = new DebateAgent({
+            mistralPath: options.mistralPath || '/home/sarah/opencode-bc/models/mistral.py',
+            kimiPath: options.kimiPath || '/home/sarah/opencode-bc/models/kimi.py'
+        });
         
         // Session metrics
         this.sessionMetrics = {
@@ -234,6 +239,19 @@ class MagnitudeSelfImprover {
             case 'gaps':
                 console.log("Knowledge gaps:");
                 this.memory.identifyGaps().forEach(g => console.log(`  - ${g}`));
+                break;
+                
+            case 'debate':
+                const debateTopic = args.slice(1).join(' ');
+                if (!debateTopic) {
+                    console.log('Usage: debate "<topic>"');
+                    break;
+                }
+                const debateRounds = parseInt(args.find(a => a.startsWith('--rounds='))?.split('=')[1]) || 3;
+                this.debateAgent.maxRounds = debateRounds;
+                const result = await this.debateAgent.debate(debateTopic);
+                console.log('\n✅ Debate complete!');
+                console.log(JSON.stringify(result.synthesis, null, 2));
                 break;
                 
             case 'export':
