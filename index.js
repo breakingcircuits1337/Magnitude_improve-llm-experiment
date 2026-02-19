@@ -1,5 +1,5 @@
-// Magnitude Self-Improvement Agent - v2.4
-// Multi-Agent Architecture with Memory System, Self-Modification, Debate, and Human Feedback
+// Magnitude Self-Improvement Agent - v2.6
+// Multi-Agent Architecture with Tool Creation, Memory, Debate, and Human Feedback
 
 import { BrowserAgent } from 'magnitude-core';
 import { 
@@ -13,6 +13,7 @@ import {
 import SelfModificationSystem from './lib/self-modify.js';
 import ReflectionAgent from './agents/reflection.js';
 import HumanFeedbackLoop from './lib/human-feedback.js';
+import ToolCreator from './lib/tool-creator.js';
 
 class MagnitudeSelfImprover {
     constructor(options = {}) {
@@ -44,6 +45,12 @@ class MagnitudeSelfImprover {
         // Initialize human feedback loop
         this.feedbackLoop = new HumanFeedbackLoop({
             feedbackPath: options.feedbackPath || './feedback'
+        });
+        
+        // Initialize tool creator
+        this.toolCreator = new ToolCreator({
+            toolsPath: options.toolsPath || './tools',
+            llm: options.llm || null
         });
         
         // Session metrics
@@ -348,6 +355,53 @@ class MagnitudeSelfImprover {
                 console.log(`   Approved: ${insights.approvedCount}`);
                 console.log(`   Approval rate: ${(insights.approvalRate * 100).toFixed(1)}%`);
                 console.log(`   Avg rating: ${insights.avgRating?.toFixed(2)}`);
+                break;
+                
+            case 'tool':
+            case 'tools':
+                const toolCmd = args[1];
+                switch (toolCmd) {
+                    case 'list':
+                        console.log('🔧 Available Tools:');
+                        this.toolCreator.listTools().forEach(t => {
+                            console.log(`  ${t.name} (${t.type}): ${t.description}`);
+                            console.log(`    Used: ${t.usageCount} times`);
+                        });
+                        break;
+                    case 'create':
+                        if (!args[2]) {
+                            console.log('Usage: tool create <description>');
+                            break;
+                        }
+                        const createResult = await this.toolCreator.createFromNeed({
+                            description: args.slice(2).join(' ')
+                        });
+                        console.log(JSON.stringify(createResult, null, 2));
+                        break;
+                    case 'use':
+                        if (!args[2]) {
+                            console.log('Usage: tool use <name> [param=value...]');
+                            break;
+                        }
+                        const params = {};
+                        args.slice(3).forEach(p => {
+                            const [k, v] = p.split('=');
+                            params[k] = v;
+                        });
+                        const useResult = await this.toolCreator.useTool(args[2], params);
+                        console.log(JSON.stringify(useResult, null, 2));
+                        break;
+                    case 'discover':
+                        console.log('🔍 Discovering tool needs...');
+                        // Get recent research
+                        const recent = this.memory.searchKnowledge('research');
+                        const needs = await this.toolCreator.discoverNeedsFromResearch(recent.slice(0, 20));
+                        console.log(`Found ${needs.length} potential tools:`);
+                        needs.forEach(n => console.log(`  - ${n.description} (${n.priority})`));
+                        break;
+                    default:
+                        console.log('Usage: tool <list|create|use|discover>');
+                }
                 break;
                 
             default:
