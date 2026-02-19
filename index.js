@@ -1,5 +1,5 @@
-// Magnitude Self-Improvement Agent - v2.6
-// Multi-Agent Architecture with Tool Creation, Memory, Debate, and Human Feedback
+// Magnitude Self-Improvement Agent - v2.8
+// Multi-Agent Architecture with Continuous Learning, Tool Creation, Memory, Debate, and Human Feedback
 
 import { BrowserAgent } from 'magnitude-core';
 import { 
@@ -14,6 +14,7 @@ import SelfModificationSystem from './lib/self-modify.js';
 import ReflectionAgent from './agents/reflection.js';
 import HumanFeedbackLoop from './lib/human-feedback.js';
 import ToolCreator from './lib/tool-creator.js';
+import ContinuousLearningLoop from './lib/continuous-loop.js';
 
 class MagnitudeSelfImprover {
     constructor(options = {}) {
@@ -55,6 +56,12 @@ class MagnitudeSelfImprover {
             toolsPath: options.toolsPath || './tools',
             llm: options.llm || null
         });
+        
+        // Initialize continuous learning loop
+        this.learningLoop = new ContinuousLearningLoop({
+            schedulePath: options.schedulePath || './schedule.json'
+        });
+        this.learningLoop.sessionRunner = this;
         
         // Session metrics
         this.sessionMetrics = {
@@ -408,6 +415,52 @@ class MagnitudeSelfImprover {
                     default:
                         console.log('Usage: tool <list|create|use|discover>');
                 }
+                break;
+                
+            case 'schedule':
+            case 'continuous':
+                const schedCmd = args[1];
+                switch (schedCmd) {
+                    case 'start':
+                        this.learningLoop.start();
+                        break;
+                    case 'stop':
+                        this.learningLoop.stop();
+                        break;
+                    case 'status':
+                        console.log(JSON.stringify(this.learningLoop.getStatus(), null, 2));
+                        break;
+                    case 'add':
+                        const topic = args.slice(3).join(' ');
+                        this.learningLoop.addTask({
+                            name: args[2] || 'scheduled-task',
+                            type: args[2] || 'research',
+                            topic,
+                            frequency: 'daily',
+                            hour: 9
+                        });
+                        break;
+                    case 'default':
+                        console.log('Adding default scheduled tasks...');
+                        this.learningLoop.addDefaultTasks();
+                        break;
+                    default:
+                        console.log('Usage: schedule <start|stop|status|add|default>');
+                }
+                break;
+                
+            case 'daemon':
+                console.log('🔄 Starting daemon mode...');
+                console.log('   Continuous learning will run in background');
+                this.learningLoop.start();
+                console.log('   Press Ctrl+C to stop');
+                
+                // Keep process alive
+                process.on('SIGINT', () => {
+                    console.log('\n🛑 Stopping daemon...');
+                    this.learningLoop.stop();
+                    process.exit(0);
+                });
                 break;
                 
             default:

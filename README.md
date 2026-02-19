@@ -1,7 +1,7 @@
 # Magnitude: LLM Self-Improvement Framework
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Version-2.7.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Version-2.8.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
   <img src="https://img.shields.io/badge/Type-Multi--Agent-orange" alt="Type">
 </p>
@@ -11,6 +11,13 @@
 > *"Do whatever you need to use the browser."*
 
 **Magnitude** is an experimental framework for turning open-source LLM architectures into autonomous agents capable of self-directed learning through persistent memory and multi-agent collaboration.
+
+## What's New in v2.8
+
+- **🔄 Continuous Learning** - Agent runs autonomously on a schedule
+- **📅 Task Scheduling** - Hourly, daily, or weekly research sessions
+- **⏰ Daemon Mode** - Runs continuously in background
+- **🛡️ Auto-Health Checks** - Monitors system health
 
 ## What's New in v2.7
 
